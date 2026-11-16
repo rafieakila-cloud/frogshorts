@@ -1,7 +1,7 @@
 {
-  "name": "FrogShorts — Video Vertikal Legal",
+  "name": "FrogShorts — Shorts Legal",
   "short_name": "FrogShorts",
-  "description": "Feed video vertikal dari Wikimedia Commons — semua berlisensi bebas (CC/Public Domain) dengan atribusi otomatis.",
+  "description": "Shorts video vertikal ≤60 detik dari Wikimedia Commons — CC/PD, akun wajib, tanpa duplikat.",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",

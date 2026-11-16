@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#000000">
-<meta name="description" content="FrogShorts — video vertikal legal & gratis dari Wikimedia Commons (CC/Public Domain) dengan atribusi otomatis.">
+<meta name="description" content="FrogShorts — video vertikal ≤60 detik, CC Commons, atribusi otomatis, akun wajib (lokal).">
 <title>FrogShorts</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -12,54 +12,65 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- TOP BAR -->
+  <!-- TOP -->
   <header id="topbar">
-    <div class="tb-logo">
-      <svg viewBox="0 0 100 100" width="26" height="26"><circle cx="50" cy="50" r="44" fill="#22c55e"/><circle cx="35" cy="42" r="13" fill="#052e16"/><circle cx="66" cy="42" r="13" fill="#052e16"/><circle cx="35" cy="42" r="5" fill="#faf6ec"/><circle cx="66" cy="42" r="5" fill="#faf6ec"/><path d="M30 68q20 14 40 0" stroke="#052e16" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
-      <span>FrogShorts</span>
+    <div class="brand">
+      <svg viewBox="0 0 100 100" width="30" height="30"><rect x="4" y="4" width="92" height="92" rx="20" fill="#f6465d"/><path d="M34 28h32v10H50v8h14v10H50v16h-16z" fill="#fff"/></svg>
+      <span>Shorts</span>
     </div>
-    <div id="cats" class="cats">
-      <button class="chip active" data-cat="frog">Kodok</button>
-      <button class="chip" data-cat="nature timelapse">Alam</button>
-      <button class="chip" data-cat="animal">Hewan</button>
-      <button class="chip" data-cat="documentary">Dokumenter</button>
-      <button class="chip" data-cat="indonesia">Indonesia</button>
-      <button class="chip" data-cat="ocean">Samudra</button>
-      <button class="chip" data-cat="city">Kota</button>
+    <div class="top-right">
+      <button id="btnAccount" class="icon-btn" title="Akun">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><circle cx="12" cy="8.5" r="4.2"/><path d="M4 21c0-4.4 3.6-7.5 8-7.5s8 3.1 8 7.5z"/></svg>
+      </button>
     </div>
-    <button id="btnSearch" class="tb-btn" aria-label="Cari video">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-1.39 1.39l.27.27v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
-    </button>
   </header>
 
-  <!-- SEARCH OVERLAY -->
-  <div id="searchOverlay" class="hidden">
-    <form id="searchForm">
-      <input id="q" type="search" placeholder="Cari video (Commons)…" autocomplete="off" enterkeyhint="search">
-      <button type="button" id="btnCloseSearch">Batal</button>
-    </form>
-    <div id="searchHint">sumber: Wikimedia Commons · semua video berlisensi bebas (CC/PD)</div>
-  </div>
+  <!-- FEED -->
+  <main id="feed" aria-label="Feed video"></main>
+  <div id="emptyState" class="hidden"><div class="empty-inner"><svg viewBox="0 0 100 100" width="70" height="70"><rect x="4" y="4" width="92" height="92" rx="20" fill="#f6465d"/><path d="M34 28h32v10H50v8h14v10H50v16h-16z" fill="#fff"/></svg><h2>Shorts habis</h2><p>Geser terus untuk memuat lebih banyak</p><button id="btnReload">Muat ulang</button></div></div>
 
-  <!-- FEED VERTIKAL -->
-  <main id="feed"></main>
-
-  <!-- STATUS / LOADING -->
-  <div id="statusBar" class="hidden"><span class="spinner"></span><span id="statusText">memuat…</span></div>
-
-  <!-- FOOTER ACTIONS (per video aktif) -->
+  <!-- SIDE ACTIONS -->
   <aside id="sideActions">
-    <button id="btnLike" class="act-btn" title="Suka (tersimpan di HP)">
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="#fff"><path d="M12 21s-8.5-5.2-11-10.4C-.5 6 3 3 7 3c2.2 0 3.9 1.1 5 3 1.1-1.9 2.8-3 5-3 4 0 7.5 3 6 7.6C20.5 15.8 12 21 12 21z"/></svg>
+    <button class="act" id="btnLike" aria-label="Suka">
+      <svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M12 21s-8.6-5.3-11.3-10.6C-.3 5.8 3.4 2.7 7.4 2.7c2.3 0 3.9 1.2 4.6 3.1 0.7-1.9 2.3-3.1 4.6-3.1 4 0 7.7 3.1 6.7 7.7C20.6 15.7 12 21 12 21z"/></svg>
       <span id="likeCount">0</span>
     </button>
-    <button id="btnSource" class="act-btn" title="Sumber & lisensi">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg>
+    <button class="act" id="btnDislike" aria-label="Tidak suka">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M12 3s8.6 5.3 11.3 10.6C24.3 18.2 20.6 21.3 16.6 21.3c-2.3 0-3.9-1.2-4.6-3.1-.7 1.9-2.3 3.1-4.6 3.1C3.4 21.3-.3 18.2.3 13.6 3.4 8.3 12 3 12 3z"/></svg>
+      <span id="dislikeCount">0</span>
     </button>
-    <button id="btnInstall" class="act-btn hidden" title="Install FrogShorts">
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <button class="act" id="btnShare" aria-label="Bagikan">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M18 16.1c-.76 0-1.44.3-1.96.77L8.9 12.7c.05-.23.1-.47.1-.7 0-.23-.05-.44-.1-.66l7.05-4.09A2.8 2.8 0 1 0 15 5.1c0 .23.04.49.1.72L8.1 9.9a2.8 2.8 0 1 0 0 4.2l7.05 4.09c-.05.23-.1.45-.1.68A2.8 2.8 0 1 0 18 16.1z"/></svg>
+      <span>Bagikan</span>
+    </button>
+    <button class="act" id="btnSave" aria-label="Simpan">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M17 3H7a2 2 0 0 0-2 2v16l7-4 7 4V5a2 2 0 0 0-2-2z"/></svg>
+      <span id="saveLabel">Simpan</span>
     </button>
   </aside>
+
+  <!-- ACCOUNT GATE (wajib) -->
+  <div id="accountGate" class="gate">
+    <div class="gate-card">
+      <svg viewBox="0 0 100 100" width="72" height="72"><rect x="4" y="4" width="92" height="92" rx="20" fill="#f6465d"/><path d="M34 28h32v10H50v8h14v10H50v16h-16z" fill="#fff"/></svg>
+      <h1>FrogShorts</h1>
+      <p class="gate-sub">Akun wajib — gratis &amp; tersimpan di HP ini saja</p>
+      <div id="gateStepCreate">
+        <input id="gateName" type="text" placeholder="Nama kamu" maxlength="32" autocomplete="off">
+        <input id="gatePin" type="password" inputmode="numeric" pattern="[0-9]*" placeholder="PIN 4 digit" maxlength="4" autocomplete="off">
+        <button id="gateCreateBtn" class="gate-btn">Buat akun &amp; masuk</button>
+      </div>
+      <div id="gateStepLogin" class="hidden">
+        <div class="gate-welcome">Halo lagi, <b id="gateWelcomeName">—</b></div>
+        <input id="gatePinLogin" type="password" inputmode="numeric" pattern="[0-9]*" placeholder="PIN kamu" maxlength="4" autocomplete="off">
+        <button id="gateLoginBtn" class="gate-btn">Masuk</button>
+        <button id="gateSwitchBtn" class="gate-link">Bukan kamu? Ganti akun</button>
+      </div>
+      <p class="gate-note">Video dari Wikimedia Commons — lisensi CC/Public Domain. Akunmu disimpan lokal di HP, bukan di server.</p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
 
 <script src="app.js"></script>
 </body>
