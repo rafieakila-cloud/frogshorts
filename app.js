@@ -100,8 +100,13 @@ let items = [];
 const seen = new Set();
 let continueToken = null;
 let loading = false;
-let currentQuery = 'frog';
+const DEFAULT_QUERY = 'cartoon animation';   // banyak kartun & video AI
+const FALLBACK_QUERIES = ['science animation', 'timelapse nature', 'AI animation', 'educational animation'];
+let currentQuery = DEFAULT_QUERY;
 let activeIndex = -1;
+
+// 🚫 filter konten terlarang: porno, judi, dan sejenisnya
+const BLOCKED = /porn|porno|sex(ual)?|nud(i|ity|e)|xxx|hentai|erotic|erotica|casino|gamble|gambl|judi|bet(ting)?|rummy|poker|strip|inces|milf|fetish|bondage/i;
 
 function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 function stripHtml(s) { const d = document.createElement('div'); d.innerHTML = s || ''; return d.textContent || ''; }
@@ -134,9 +139,17 @@ async function fetchShortsPage(query, cont) {
       width: vi.width || 0,
       height: vi.height || 0,
       duration: vi.duration || 999,
+      size: vi.size || Infinity,
       artist, license, licenseUrl, descUrl
     };
-  }).filter(v => v.url && v.height >= v.width && v.duration <= 62 && !seen.has(v.url) && /cc/i.test(v.license + '' + v.licenseUrl));
+  }).filter(v =>
+    v.url &&
+    v.duration <= 62 &&                 // shorts: maksimal ~60 detik
+    v.size <= 60 * 1024 * 1024 &&       // harus muat & cepat diputar (≤60MB)
+    !seen.has(v.url) &&
+    /cc/i.test(v.license + '' + v.licenseUrl) &&
+    !BLOCKED.test(v.title)              // 🚫 bukan porno/judi
+  );
   return { items: out, next: cont2 };
 }
 
@@ -149,8 +162,13 @@ async function loadFeed(reset) {
     fresh.forEach(v => seen.add(v.url));
     items = items.concat(fresh);
     continueToken = next;
-    if (!items.length && currentQuery !== 'timelapse nature') { currentQuery = 'timelapse nature'; loading = false; return loadFeed(true); }
-    if (!items.length) { emptyState.classList.remove('hidden'); loading = false; return; }
+    if (!items.length) {
+      // coba query cadangan berikutnya
+      const i = FALLBACK_QUERIES.indexOf(currentQuery);
+      const nextQuery = FALLBACK_QUERIES[i + 1] || FALLBACK_QUERIES[0];
+      if (currentQuery !== nextQuery) { currentQuery = nextQuery; loading = false; return loadFeed(true); }
+      emptyState.classList.remove('hidden'); loading = false; return;
+    }
     appendSlides(items.length - fresh.length);
     loading = false;
   } catch (e) { showToast('gagal memuat: ' + e.message); loading = false; }
@@ -171,6 +189,8 @@ function appendSlides(from) {
         <a class="lic-pill" href="${escapeHtml(v.licenseUrl)}" target="_blank" rel="noopener license">${escapeHtml(v.license)}</a>
       </div>`;
     feed.appendChild(slide);
+    const vid = slide.querySelector('video');
+    vid.addEventListener('error', () => { slide.remove(); if (feed.children.length < 4 && continueToken) loadFeed(false); });
     io.observe(slide);
   }
   if (activeIndex === -1) activateSlide(0);
@@ -243,7 +263,7 @@ btnShare.addEventListener('click', async () => {
   try { if (navigator.share) await navigator.share(data); else { await navigator.clipboard.writeText(data.url); showToast('link disalin'); } } catch {}
 });
 
-document.getElementById('btnReload').addEventListener('click', () => { currentQuery = 'frog'; loadFeed(true); });
+document.getElementById('btnReload').addEventListener('click', () => { currentQuery = DEFAULT_QUERY; loadFeed(true); });
 
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
